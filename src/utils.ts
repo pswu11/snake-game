@@ -1,4 +1,4 @@
-import { Id, Coord, Direction } from "./main"
+import { Id, Coord, Direction, initSnakeSize } from "./main"
 
 export const directionalChange = {
   left: [-1, 0],
@@ -38,13 +38,13 @@ export function spawnAppleRandomly(columns: number, rows: number, snake: Coord[]
   return newApple
 }
 
-export function spawnSnakeRandomly(initSnakeLength: number, columns: number, rows: number): [Coord[], Direction] {
+export function spawnSnakeRandomly(columns: number, rows: number): [Coord[], Direction] {
   const newSnake: Coord[] = []
-  let [x, y] = genRandomCoordInArea(initSnakeLength, columns - initSnakeLength, initSnakeLength,rows - initSnakeLength)
+  let [x, y] = genRandomCoordInArea(initSnakeSize, columns - initSnakeSize, initSnakeSize,rows - initSnakeSize)
   newSnake.push([x, y])
   const allDirections: Direction[] = ["left", "right", "up", "down"]
   const spawnDirection = allDirections[Math.floor(Math.random() * 4)]
-  for (let i = 0; i < initSnakeLength - 1; i++) {
+  for (let i = 0; i < initSnakeSize - 1; i++) {
     x -= directionalChange[spawnDirection][0]
     y -= directionalChange[spawnDirection][1]
     newSnake.push([x, y])

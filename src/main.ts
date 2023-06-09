@@ -1,5 +1,4 @@
 import "./style.css"
-import {createScoreBoard, updateScore, createHungerMeter, hungerCounter} from "./metrics"
 import {
   coordToId,
   directionalChange,
@@ -13,15 +12,19 @@ import {
 export type Coord = [number, number]
 export type Id = `${number}-${number}`
 export type Direction = "left" | "right" | "up" | "down"
-
 export const app = document.getElementById("app") as HTMLElement
-export let rows = 10
-export let columns = 10
-export let currentScore = 0
-export let [snake, currentDirection] = spawnSnakeRandomly(3, columns, rows)
+export const initSnakeSize = 3
+export const initScore = 0
+export const initHunger = 30
+export const appleRespawnChance = 0.15
+export let rows = 20
+export let columns = 20
+export let [snake, currentDirection] = spawnSnakeRandomly(columns, rows)
 export let board: HTMLElement = app
 export let apple: Coord = spawnAppleRandomly(columns, rows, snake)
 export let isGameActive: boolean = false
+export let currentHunger = initHunger
+export let currentScore = initScore
 
 // Function: create start button
 function addStartScene(): HTMLElement {
@@ -60,6 +63,52 @@ function createBoard() {
   return board
 }
 
+// Function: add score board
+function createScoreBoard() {
+  const scoreBoard = document.createElement("div")
+  const text = document.createElement("div")
+  const score = document.createElement("div")
+  scoreBoard.id = "score-board"
+  text.id = "score-board-text"
+  score.id = "score-board-score"
+  text.textContent = "Score: "
+  score.textContent = currentScore.toString()
+  scoreBoard.appendChild(text)
+  scoreBoard.appendChild(score)
+  app.appendChild(scoreBoard)
+}
+
+// Function: update score
+function updateScore() {
+  const scoreElement = document.getElementById(
+    "score-board-score"
+  ) as HTMLElement
+  scoreElement.textContent = currentScore.toString()
+}
+
+// Function: create hunger meter
+function createHungerMeter() {
+  const hungerMeter = document.createElement("div")
+  const text = document.createElement("div")
+  const score = document.createElement("div")
+  hungerMeter.id = "hunger-meter"
+  text.id = "hunger-meter-text"
+  score.id = "hunger-meter-score"
+  text.textContent = "Hunger: "
+  score.textContent = currentHunger.toString()
+  hungerMeter.appendChild(text)
+  hungerMeter.appendChild(score)
+  app.appendChild(hungerMeter)
+}
+
+// Function: update hunger
+function updateHunger() {
+  const hungerElement = document.getElementById(
+    "hunger-meter-score"
+  ) as HTMLElement
+  hungerElement.textContent = currentHunger.toString()
+}
+
 // Function: draw a snake
 function drawSnake(board: HTMLElement) {
   const cubes = [...board.children]
@@ -83,7 +132,7 @@ function drawApple() {
   // remove existing apple
   const oldApple = document.querySelector(".apple-cube")
   oldApple?.classList.toggle("apple-cube")
-  // generate a new apple & draw it
+  // generate a new apple
   const [xRange, yRange] = spawnAppleRandomly(columns, rows, snake)
   const appleDiv = document.getElementById(`${xRange}-${yRange}`) as HTMLElement
   appleDiv?.classList.add("apple-cube")
@@ -106,8 +155,11 @@ function resetGame() {
   document.getElementById("score-board")?.remove()
   document.getElementById("hunger-meter")?.remove()
   document.getElementById("gameover-dialog")?.remove()
+  // reset scores and hunger
+  currentHunger = initHunger
+  currentScore = initScore
   // respawn the snake
-  const result = spawnSnakeRandomly(3, columns, rows)
+  const result = spawnSnakeRandomly(columns, rows)
   snake = result[0]
   currentDirection = result[1]
 }
@@ -124,11 +176,13 @@ function moveSnake(direction: Direction) {
     // the apple disappears at a chance when you're getting closer
     if (
       newHead.every((val, idx) => Math.abs(val - apple[idx]) <= 2) &&
-      Math.random() < 0.2
+      Math.random() < appleRespawnChance
     ) {
       drawApple()
     }
     if (newHead.every((val, idx) => val === apple[idx])) {
+      currentHunger += 3
+      updateHunger()
       currentScore += 1
       updateScore()
       apple = spawnAppleRandomly(columns, rows, snake)
@@ -145,58 +199,57 @@ function activateSnake(event: KeyboardEvent) {
     case "ArrowLeft": {
       if (currentDirection === "right") return
       currentDirection = "left"
-      console.log("left")
+      // console.log("left")
       break
     }
     case "ArrowRight": {
       if (currentDirection === "left") return
       currentDirection = "right"
-      console.log("right")
+      // console.log("right")
       break
     }
     case "ArrowUp": {
       if (currentDirection === "down") return
       currentDirection = "up"
-
-      console.log("up")
+      // console.log("up")
       break
     }
     case "ArrowDown": {
       if (currentDirection === "up") return
       currentDirection = "down"
-      console.log("down")
+      // console.log("down")
       break
     }
     default: {
       return
     }
   }
-  // Comment it to turn off moving loop
   if (!isGameActive) {
     isGameActive = true
-    hungerCounter()
     movingLoop()
+    HungerLoop()
   }
-  // Uncomment it to switch to turn on manual move
+  // Manual move:
   // moveSnake(currentDirection)
 }
 
-// Function: move snake constantly using setInterval()
-// function keepMovingSnake() {
-//   // clear any previous internal (PS. setInterval() keeps running even if you remove the event listener)
-//   clearInterval(internvalId)
-//   internvalId = setInterval(function () {
-//     if (isGameActive) {
-//       moveSnake(currentDirection)
-//     }
-//   }, 200)
-// }
+function HungerLoop() {
+  currentHunger -= 1
+  updateHunger()
+  if (currentHunger === 0) {
+    gameOver()
+    return
+  }
+  if (isGameActive) {
+    setTimeout(HungerLoop, 1000)
+  }
+}
 
 function movingLoop() {
   moveSnake(currentDirection)
   var speed = 200 - (snake.length * 10 > 140 ? 140 : snake.length * 10)
   if (isGameActive) {
-    console.log(speed)
+    // console.log(speed)
     setTimeout(movingLoop, speed)
   }
 }
