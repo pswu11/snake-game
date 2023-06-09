@@ -26,7 +26,7 @@ export let isGameActive: boolean = false
 export let currentHunger = initHunger
 export let currentScore = initScore
 
-// Function: create start button
+// create start button
 function addStartScene(): HTMLElement {
   const startBtn = document.createElement("button")
   startBtn.id = "start-btn"
@@ -43,7 +43,7 @@ function addStartScene(): HTMLElement {
   return startBtn
 }
 
-// Function: create board
+// create board
 function createBoard() {
   // create new board
   const board = document.createElement("div")
@@ -63,7 +63,7 @@ function createBoard() {
   return board
 }
 
-// Function: add score board
+// add score board
 function createScoreBoard() {
   const scoreBoard = document.createElement("div")
   const text = document.createElement("div")
@@ -75,18 +75,10 @@ function createScoreBoard() {
   score.textContent = currentScore.toString()
   scoreBoard.appendChild(text)
   scoreBoard.appendChild(score)
-  app.appendChild(scoreBoard)
+  return scoreBoard
 }
 
-// Function: update score
-function updateScore() {
-  const scoreElement = document.getElementById(
-    "score-board-score"
-  ) as HTMLElement
-  scoreElement.textContent = currentScore.toString()
-}
-
-// Function: create hunger meter
+// create hunger meter
 function createHungerMeter() {
   const hungerMeter = document.createElement("div")
   const text = document.createElement("div")
@@ -98,10 +90,31 @@ function createHungerMeter() {
   score.textContent = currentHunger.toString()
   hungerMeter.appendChild(text)
   hungerMeter.appendChild(score)
-  app.appendChild(hungerMeter)
+  return hungerMeter
 }
 
-// Function: update hunger
+// wrap the game info panel
+function createInfoPanel() {
+  const panel = document.createElement("div")
+  panel.id = "gameInfoPanel"
+  app.appendChild(panel)
+  const hungerEl = createHungerMeter()
+  const scoreEl = createScoreBoard()
+  panel.appendChild(hungerEl)
+  panel.appendChild(scoreEl)
+
+}
+
+// update score
+function updateScore() {
+  const scoreElement = document.getElementById(
+    "score-board-score"
+  ) as HTMLElement
+  scoreElement.textContent = currentScore.toString()
+}
+
+
+// update hunger
 function updateHunger() {
   const hungerElement = document.getElementById(
     "hunger-meter-score"
@@ -109,7 +122,7 @@ function updateHunger() {
   hungerElement.textContent = currentHunger.toString()
 }
 
-// Function: draw a snake
+// draw a snake
 function drawSnake(board: HTMLElement) {
   const cubes = [...board.children]
   cubes.forEach((cube) => {
@@ -127,7 +140,7 @@ function drawSnake(board: HTMLElement) {
   })
 }
 
-// Function: draw an apple
+// draw an apple
 function drawApple() {
   // remove existing apple
   const oldApple = document.querySelector(".apple-cube")
@@ -143,12 +156,11 @@ export function gameOver() {
   // remove key controls and switch to false
   document.removeEventListener("keydown", activateSnake)
   isGameActive = false
-  // show gameover message
   const gameoverMsg = createGameEndMsg()
   gameoverMsg.showModal()
 }
 
-// Function: Reset
+// reset: remove all the previous elements and values
 function resetGame() {
   // clear any existing board, score, and popup
   document.querySelector(".board")?.remove()
@@ -164,7 +176,7 @@ function resetGame() {
   currentDirection = result[1]
 }
 
-// Function: move the snake
+// move snake for one step
 function moveSnake(direction: Direction) {
   const [XcurrentHead, YcurrentHead] = snake[0]
   const [dX, dY] = directionalChange[direction]
@@ -257,14 +269,12 @@ function movingLoop() {
 function initGame() {
   board = createBoard()
   drawSnake(board)
-  createScoreBoard()
-  createHungerMeter()
+  createInfoPanel()
   drawApple()
-  console.log("check init:", snake, apple)
   document.addEventListener("keydown", activateSnake)
 }
 
-// Function: Gameover Popup
+// Gameover Popup
 function createGameEndMsg() {
   const endMsg = document.createElement("dialog")
   const text = document.createElement("p")
