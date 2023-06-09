@@ -53,7 +53,7 @@
 
 
 /* SCORES */
-#score-board {
+#score-board, #hunger-meter {
   display: flex;
 
 }

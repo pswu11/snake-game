@@ -1,4 +1,5 @@
 import "./style.css"
+import {createScoreBoard, updateScore, createHungerMeter, hungerCounter} from "./metrics"
 import {
   coordToId,
   directionalChange,
@@ -13,16 +14,14 @@ export type Coord = [number, number]
 export type Id = `${number}-${number}`
 export type Direction = "left" | "right" | "up" | "down"
 
-const app = document.getElementById("app") as HTMLElement
-let rows = 10
-let columns = 10
-let currentScore = 0
-let [snake, currentDirection] = spawnSnakeRandomly(3, columns, rows)
-let board: HTMLElement = app
-let apple: Coord = spawnAppleRandomly(columns, rows, snake)
-let isGameActive: boolean = false
-console.log(snake)
-console.log(apple)
+export const app = document.getElementById("app") as HTMLElement
+export let rows = 10
+export let columns = 10
+export let currentScore = 0
+export let [snake, currentDirection] = spawnSnakeRandomly(3, columns, rows)
+export let board: HTMLElement = app
+export let apple: Coord = spawnAppleRandomly(columns, rows, snake)
+export let isGameActive: boolean = false
 
 // Function: create start button
 function addStartScene(): HTMLElement {
@@ -61,29 +60,6 @@ function createBoard() {
   return board
 }
 
-// Function: add score board
-function createScoreBoard() {
-  const scoreBoard = document.createElement("div")
-  const text = document.createElement("div")
-  const score = document.createElement("div")
-  scoreBoard.id = "score-board"
-  text.id = "score-board-text"
-  score.id = "score-board-score"
-  text.textContent = "Score: "
-  score.textContent = currentScore.toString()
-  scoreBoard.appendChild(text)
-  scoreBoard.appendChild(score)
-  app.appendChild(scoreBoard)
-}
-
-// Function: update score
-function updateScore() {
-  const scoreElement = document.getElementById(
-    "score-board-score"
-  ) as HTMLElement
-  scoreElement.textContent = currentScore.toString()
-}
-
 // Function: draw a snake
 function drawSnake(board: HTMLElement) {
   const cubes = [...board.children]
@@ -107,13 +83,14 @@ function drawApple() {
   // remove existing apple
   const oldApple = document.querySelector(".apple-cube")
   oldApple?.classList.toggle("apple-cube")
-  // create a new apple
-  // const [xRange, yRange] = spawnAppleRandomly(columns, rows, snake)
-  const appleDiv = document.getElementById(`${apple[0]}-${apple[1]}`) as HTMLElement
-  appleDiv.classList.add("apple-cube")
+  // generate a new apple & draw it
+  const [xRange, yRange] = spawnAppleRandomly(columns, rows, snake)
+  const appleDiv = document.getElementById(`${xRange}-${yRange}`) as HTMLElement
+  appleDiv?.classList.add("apple-cube")
+  apple = [xRange, yRange]
 }
 
-function gameOver() {
+export function gameOver() {
   // remove key controls and switch to false
   document.removeEventListener("keydown", activateSnake)
   isGameActive = false
@@ -127,6 +104,7 @@ function resetGame() {
   // clear any existing board, score, and popup
   document.querySelector(".board")?.remove()
   document.getElementById("score-board")?.remove()
+  document.getElementById("hunger-meter")?.remove()
   document.getElementById("gameover-dialog")?.remove()
   // respawn the snake
   const result = spawnSnakeRandomly(3, columns, rows)
@@ -196,6 +174,7 @@ function activateSnake(event: KeyboardEvent) {
   // Comment it to turn off moving loop
   if (!isGameActive) {
     isGameActive = true
+    hungerCounter()
     movingLoop()
   }
   // Uncomment it to switch to turn on manual move
@@ -226,6 +205,7 @@ function initGame() {
   board = createBoard()
   drawSnake(board)
   createScoreBoard()
+  createHungerMeter()
   drawApple()
   console.log("check init:", snake, apple)
   document.addEventListener("keydown", activateSnake)
