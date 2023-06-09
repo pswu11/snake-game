@@ -2,9 +2,9 @@ import "./style.css"
 import {
   coordToId,
   directionalChange,
-  genRandomCoordInArea,
   isOnSnake,
   isOnWall,
+  spawnAppleRandomly,
   spawnSnakeRandomly,
 } from "./utils"
 
@@ -14,13 +14,15 @@ export type Id = `${number}-${number}`
 export type Direction = "left" | "right" | "up" | "down"
 
 const app = document.getElementById("app") as HTMLElement
-let rows = 20
-let columns = 20
+let rows = 10
+let columns = 10
 let currentScore = 0
 let [snake, currentDirection] = spawnSnakeRandomly(3, columns, rows)
 let board: HTMLElement = app
-let apple: Coord = genRandomCoordInArea(columns, rows, snake)
+let apple: Coord = spawnAppleRandomly(columns, rows, snake)
 let isGameActive: boolean = false
+console.log(snake)
+console.log(apple)
 
 // Function: create start button
 function addStartScene(): HTMLElement {
@@ -106,10 +108,9 @@ function drawApple() {
   const oldApple = document.querySelector(".apple-cube")
   oldApple?.classList.toggle("apple-cube")
   // create a new apple
-  const [xRange, yRange] = genRandomCoordInArea(columns, rows, snake)
-  const appleDiv = document.getElementById(`${xRange}-${yRange}`) as HTMLElement
+  // const [xRange, yRange] = spawnAppleRandomly(columns, rows, snake)
+  const appleDiv = document.getElementById(`${apple[0]}-${apple[1]}`) as HTMLElement
   appleDiv.classList.add("apple-cube")
-  apple = [xRange, yRange]
 }
 
 function gameOver() {
@@ -152,6 +153,7 @@ function moveSnake(direction: Direction) {
     if (newHead.every((val, idx) => val === apple[idx])) {
       currentScore += 1
       updateScore()
+      apple = spawnAppleRandomly(columns, rows, snake)
       drawApple()
     } else {
       snake.pop()
@@ -225,6 +227,7 @@ function initGame() {
   drawSnake(board)
   createScoreBoard()
   drawApple()
+  console.log("check init:", snake, apple)
   document.addEventListener("keydown", activateSnake)
 }
 
