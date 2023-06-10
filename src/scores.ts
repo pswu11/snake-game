@@ -1,9 +1,10 @@
-import { app } from "./snake"
-
+import { app, gameOver, isGameActive } from "./snake"
+// scores
 const initScore: number = 0
 const initHunger: number = 20
-let currentScore = initScore
-let currentHunger = initHunger
+export let currentScore = initScore
+export let currentHunger = initHunger
+
 
 // add score board
 function createScoreBoard() {
@@ -47,6 +48,25 @@ export function createInfoPanel() {
 
 }
 
+// increase score 
+export function increaseScore(score: number = 1) {
+  currentScore += score
+  updateScore()
+}
+
+// reduce hunger
+export function reduceHunger(score: number = 1) {
+  currentHunger -= score
+  updateHunger()
+}
+
+export function resetAllScores() {
+  currentScore = initScore
+  currentHunger = initHunger
+  updateHunger()
+  updateScore()
+}
+
 // update score
 export function updateScore() {
   const scoreElement = document.getElementById(
@@ -62,3 +82,15 @@ export function updateHunger() {
   ) as HTMLElement
   hungerElement.textContent = currentHunger.toString()
 }
+
+export function HungerLoop() {
+  reduceHunger()
+  if (currentHunger === 0) {
+    gameOver()
+    return
+  }
+  if (isGameActive) {
+    setTimeout(HungerLoop, 1000)
+  }
+}
+

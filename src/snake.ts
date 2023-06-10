@@ -3,12 +3,20 @@ import {
   spawnAppleRandomly,
   spawnSnakeRandomly,
   drawPixel,
-  clearSnake,
   isOnWall,
   isOnSnake,
   clearBoard,
+  clearPixel,
+  clearApple,
 } from "./utils"
-import { createInfoPanel } from "./scores"
+import {
+  createInfoPanel,
+  increaseScore,
+  currentScore,
+  resetAllScores,
+  reduceHunger,
+  HungerLoop,
+} from "./scores"
 
 // global
 export type Coord = [number, number]
@@ -24,17 +32,17 @@ export const directionalChange = {
   down: [0, 1],
   up: [0, -1],
 }
-const initSnakeSpeed = 300
+const initSnakeSpeed = 250
 const snakeColor = "#31784c"
 const appleColor = "#ae0505"
 export let [snake, currentDirection]: [Coord[], Direction] = spawnSnakeRandomly(
   columns,
   rows
 )
-let apple: Coord = spawnAppleRandomly(columns, rows, snake)
+let apple: Coord = [0, 0]
 
 // game control: event queue and moving loop
-let isGameActive: boolean = false
+export let isGameActive: boolean = false
 let now: EpochTimeStamp
 let then: EpochTimeStamp
 let elapsed: EpochTimeStamp
@@ -60,13 +68,15 @@ export const board = createBoard()
 export const ctx = board.getContext("2d") as CanvasRenderingContext2D
 export const pixelSize = board.width / columns
 
-function drawSnake() {
+function drawSnake(rate: number = 1) {
   for (let [x, y] of snake) {
-    drawPixel(x, y, snakeColor)
+    drawPixel(x * rate, y * rate, snakeColor)
   }
 }
 
 function drawApple() {
+  clearApple(apple)
+  apple = spawnAppleRandomly(columns, rows, snake)
   drawPixel(apple[0], apple[1], appleColor)
 }
 
@@ -74,24 +84,33 @@ function moveSnake(direction: Direction) {
   const [cX, cY] = snake[0]
   const [dX, dY] = directionalChange[direction]
   const newHead = [cX + dX, cY + dY] as Coord
-  if (isOnWall(newHead, columns, rows) || isOnSnake(newHead, snake)) {
+  snake.unshift(newHead)
+  if (isOnWall(newHead, columns, rows) || isOnSnake(newHead, snake.slice(1))) {
     gameOver()
   } else {
-    clearSnake()
-    snake.pop()
-    snake.unshift(newHead)
-    drawSnake()
+    if (
+      newHead.every((val, idx) => Math.abs(val - apple[idx]) <= 2) &&
+      Math.random() < 0.2
+    ) {
+      drawApple()
+    }
+    if (newHead.every((val, idx) => val === apple[idx])) {
+      increaseScore(1)
+      reduceHunger(-3)
+      drawApple()
+    } else {
+      const [tX, tY] = snake.pop() as Coord
+      clearPixel(tX, tY)
+    }
   }
 }
 
 function gameLoop() {
   now = Date.now() // 10
-  // console.log("gameloop started: ", now, isGameActive, queueTrafficLight)
   elapsed = now - then // 10 - 5 = 5
   const speed =
-    initSnakeSpeed - (snake.length * 10 > 140 ? 140 : snake.length * 10)
+    initSnakeSpeed - (currentScore * 10 > 140 ? 140 : currentScore * 10)
   drawSnake()
-  drawApple()
   // check when can we process the next event
   if (queueTrafficLight) {
     queueTrafficLight = false
@@ -99,19 +118,24 @@ function gameLoop() {
     changeDirection(nextEvent)
     eventQueue.shift()
   }
-  // check whether we should the snake based on its speed
+  // check whether we should draw the snake based on its speed
   if (elapsed > speed) {
     moveSnake(currentDirection)
     queueTrafficLight = true
     then = now
   }
+
+  if (elapsed > 1000) {
+    reduceHunger(1)
+  }
+
   if (isGameActive) {
     setTimeout(gameLoop, 1)
   }
 }
 
+
 function changeDirection(eventKey: string) {
-  console.log(eventKey)
   switch (eventKey) {
     case "ArrowLeft": {
       if (currentDirection === "right") return
@@ -177,7 +201,7 @@ function removeAllKeyDownListener() {
   console.log("removed!")
 }
 
-function gameOver() {
+export function gameOver() {
   removeAllKeyDownListener()
   isGameActive = false
   const gameoverMsg = createGameEndMsg()
@@ -191,6 +215,7 @@ const handleSpaceKey = (event: KeyboardEvent) => {
       isGameActive = true
       then = Date.now()
       activateSnake()
+      HungerLoop()
       gameLoop()
     } else {
       isGameActive = false
@@ -201,7 +226,7 @@ const handleSpaceKey = (event: KeyboardEvent) => {
 function init() {
   drawSnake()
   drawApple()
-  // console.log("init", isGameActive, queueTrafficLight)
+  resetAllScores()
   document.addEventListener("keydown", handleSpaceKey)
   console.log("added event listener")
 }

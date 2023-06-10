@@ -20,19 +20,28 @@ export function drawPixel(x: number, y: number, color: string) {
   ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize)
 }
 
+export function drawPixelHalf(x: number, y: number, color: string) {
+  ctx.fillStyle = color
+  ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize * 0.5, pixelSize * 0.5)
+}
+
 export function clearPixel(x: number, y: number) {
-  ctx.clearRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize)
+  ctx.clearRect(x * pixelSize - 1, y * pixelSize -1 , pixelSize + 2, pixelSize + 2)
 }
 
 export function clearSnake() {
   for (let [x, y] of snake) {
     ctx.clearRect(
-      x * pixelSize - 1,
-      y * pixelSize - 1,
+      x * pixelSize -1,
+      y * pixelSize -1,
       pixelSize + 2,
       pixelSize + 2
     )
   }
+}
+
+export function clearApple(coord: Coord) {
+  clearPixel(coord[0], coord[1])
 }
 
 // snake
