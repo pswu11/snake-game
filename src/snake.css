@@ -22,22 +22,25 @@
   align-items: center;
   gap: 1rem;
   background-color: rgb(121, 9, 31);
-  /* background-color: #339326; */
   color: beige;
 }
 
-.board {
+canvas.board {
   width: 70vmin; 
   height: 70vmin;
   background-color: rgb(241, 241, 227);
-  display: grid;
   border: 4px dashed rgb(2, 24, 5);
 }
 
+
 /* SCORES */
+#game-info-panel {
+  display: flex;
+  gap: 2rem;
+}
+
 #score-board, #hunger-meter {
   display: flex;
-
 }
 
 #gameover-dialog {
@@ -45,7 +48,7 @@
   margin: auto;
   background-color: rgb(2, 24, 5);
   color: beige;
-  border: 4px dashed rgb(206, 41, 74);
+  border: 4px dashed #ce294a;
   display: flex;
   flex-direction: column;
   gap: 12px;
