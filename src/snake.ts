@@ -32,7 +32,7 @@ export const directionalChange = {
   down: [0, 1],
   up: [0, -1],
 }
-const initSnakeSpeed = 250
+const initSnakeSpeed = 200
 const snakeColor = "#31784c"
 const appleColor = "#ae0505"
 export let [snake, currentDirection]: [Coord[], Direction] = spawnSnakeRandomly(
@@ -90,7 +90,7 @@ function moveSnake(direction: Direction) {
   } else {
     if (
       newHead.every((val, idx) => Math.abs(val - apple[idx]) <= 2) &&
-      Math.random() < 0.2
+      Math.random() < 0.15
     ) {
       drawApple()
     }

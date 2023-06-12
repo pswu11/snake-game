@@ -1,7 +1,7 @@
 import { app, gameOver, isGameActive } from "./snake"
 // scores
 const initScore: number = 0
-const initHunger: number = 20
+const initHunger: number = 30
 export let currentScore = initScore
 export let currentHunger = initHunger
 
@@ -92,5 +92,9 @@ export function HungerLoop() {
   if (isGameActive) {
     setTimeout(HungerLoop, 1000)
   }
+}
+
+export function addHighScores() {
+  
 }
 
