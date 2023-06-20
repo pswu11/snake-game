@@ -16,6 +16,7 @@ import {
   resetAllScores,
   reduceHunger,
   HungerLoop,
+  addHighScores,
 } from "./scores"
 
 // global
@@ -24,6 +25,9 @@ export type Direction = "left" | "right" | "up" | "down"
 export const app = document.getElementById("app") as HTMLElement
 
 // board & game elements
+export let board: HTMLCanvasElement
+export let ctx: CanvasRenderingContext2D
+export let pixelSize: number
 export const [columns, rows] = [20, 20]
 export const initSnakeSize = 3
 export const directionalChange = {
@@ -51,22 +55,58 @@ let newEvent: string
 let nextEvent: string
 let queueTrafficLight: boolean = true
 
-// draw board
-function createBoard() {
-  // create new board
-  const board = document.createElement("canvas")
-  board.classList.add("board")
-  let viewportMinSize = Math.min(window.innerWidth, window.innerHeight)
-  board.width = viewportMinSize * 0.7
-  board.height = viewportMinSize * 0.7
-  createInfoPanel()
-  app.appendChild(board)
-  return board
+// player
+let playerName: string
+
+
+// add start scence
+function addStartScene(): HTMLElement {
+  const playerNameForm = document.createElement("form")
+  const startBtn = document.createElement("button")
+  playerNameForm.id = "player-name-form"
+  playerNameForm.innerHTML = `
+  <div class="form-row">
+  <label>Player name: </label>
+  <input type="text" id="player-name" name="player-name" maxlength="20" required/>
+  </div>
+  `
+  startBtn.id = "start-btn"
+  startBtn.textContent = "Start game"
+  playerNameForm.appendChild(startBtn)
+  app.appendChild(playerNameForm)
+  playerNameForm.addEventListener(
+    "submit",
+    (event) => {
+      event.preventDefault()
+      const myForm = event.target as HTMLFormElement
+      const formData = new FormData(myForm)
+      playerName = formData.get("player-name") as string
+      console.log("Current player: ", playerName)
+      playerNameForm.remove()
+      startBtn.remove()
+      init()
+    },
+    { once: true }
+  )
+  return startBtn
 }
 
-export const board = createBoard()
-export const ctx = board.getContext("2d") as CanvasRenderingContext2D
-export const pixelSize = board.width / columns
+// draw board
+function createBoard() {
+  const canvasBoard = document.querySelector("canvas")
+  if (!canvasBoard) {
+      // create new board
+    const newBoard = document.createElement("canvas")
+    newBoard.classList.add("board")
+    let viewportMinSize = Math.min(window.innerWidth, window.innerHeight)
+    newBoard.width = viewportMinSize * 0.7
+    newBoard.height = viewportMinSize * 0.7
+    createInfoPanel()
+    app.appendChild(newBoard)
+    return newBoard
+  }
+  return canvasBoard
+}
 
 function drawSnake(rate: number = 1) {
   for (let [x, y] of snake) {
@@ -134,7 +174,6 @@ function gameLoop() {
   }
 }
 
-
 function changeDirection(eventKey: string) {
   switch (eventKey) {
     case "ArrowLeft": {
@@ -175,15 +214,21 @@ function activateSnake() {
 function createGameEndMsg() {
   const endMsg = document.createElement("dialog")
   const text = document.createElement("p")
-  const button = document.createElement("button")
+  const restartBtn = document.createElement("button")
+  const checkScoresBtn = document.createElement("button")
   endMsg.id = "gameover-dialog"
-  text.textContent = "Gameover!!!"
-  button.textContent = "Restart"
+  text.textContent = `
+  Gameover! 
+  Your Score: ${currentScore}
+  `
+  restartBtn.textContent = "Restart"
+  checkScoresBtn.textContent = "High Scores"
   endMsg.append(text)
-  endMsg.append(button)
+  endMsg.append(restartBtn)
+  endMsg.append(checkScoresBtn)
   app.append(endMsg)
   // click on button to restart
-  button.addEventListener("click", () => {
+  restartBtn.addEventListener("click", () => {
     endMsg.remove()
     clearBoard()
     const newSnake = spawnSnakeRandomly(columns, rows)
@@ -191,6 +236,11 @@ function createGameEndMsg() {
     currentDirection = newSnake[1]
     apple = spawnAppleRandomly(columns, rows, snake)
     init()
+  })
+  checkScoresBtn.id = "check-scores-btn"
+  checkScoresBtn.addEventListener("click", () => {
+    app.querySelectorAll(":not(#heading)").forEach((el) => el.remove())
+    addHighScores()
   })
   return endMsg
 }
@@ -224,6 +274,9 @@ const handleSpaceKey = (event: KeyboardEvent) => {
 }
 
 function init() {
+  board = createBoard()
+  ctx = board.getContext("2d") as CanvasRenderingContext2D
+  pixelSize = board.width / columns
   drawSnake()
   drawApple()
   resetAllScores()
@@ -231,4 +284,4 @@ function init() {
   console.log("added event listener")
 }
 
-init()
+addStartScene()

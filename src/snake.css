@@ -32,6 +32,27 @@ canvas.board {
   border: 4px dashed rgb(2, 24, 5);
 }
 
+#player-name-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+  gap: 1rem;
+}
+
+input[type=text] {
+  font-family: 'Press Start 2P', cursive, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  padding-left: 4px;
+  width: 180px;
+}
+
 
 /* SCORES */
 #game-info-panel {
@@ -58,6 +79,7 @@ canvas.board {
 
 button {
   padding: 4px 12px;
-  border: 2px solid rgb(2, 24, 5);
+  border: 2px solid rgb(192, 193, 186);
+  border-radius: 4px;
 }
 

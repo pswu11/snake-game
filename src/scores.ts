@@ -95,6 +95,8 @@ export function HungerLoop() {
 }
 
 export function addHighScores() {
-  
+  const highScores = document.createElement("div")
+  highScores.innerHTML = "HIGH SCORES!"
+  app.appendChild(highScores)
 }
 
