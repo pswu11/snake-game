@@ -212,7 +212,7 @@ function activateSnake() {
   document.addEventListener("keydown", handleArrowKey)
 }
 
-function createGameEndMsg() {
+async function createGameEndMsg() {
   const endMsg = document.createElement("dialog")
   const text = document.createElement("p")
   const restartBtn = document.createElement("button")
@@ -222,10 +222,10 @@ function createGameEndMsg() {
   Gameover! 
   Your Score: ${currentScore}
   `
-  // await updateHighScores({
-  //   user: playerName,
-  //   score: currentScore
-  // })
+  await updateHighScores({
+    user: playerName,
+    score: currentScore
+  })
   restartBtn.textContent = "Restart"
   checkScoresBtn.textContent = "High Scores"
   endMsg.append(text)
@@ -256,10 +256,10 @@ function removeAllKeyDownListener() {
   console.log("removed!")
 }
 
-export function gameOver() {
+export async function gameOver() {
   removeAllKeyDownListener()
   isGameActive = false
-  const gameoverMsg = createGameEndMsg()
+  const gameoverMsg = await createGameEndMsg()
   gameoverMsg.showModal()
 }
 
