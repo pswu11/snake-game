@@ -10,7 +10,6 @@ import {
 } from "./snake"
 
 // canvas
-
 export function clearBoard() {
   ctx.clearRect(0, 0, board.width, board.height)
 }
@@ -45,7 +44,6 @@ export function clearApple(coord: Coord) {
 }
 
 // snake
-
 export function isOnSnake(cube: Coord, snake: Coord[]) {
   return snake.some((coord) => coord.every((val, idx) => val === cube[idx]))
 }

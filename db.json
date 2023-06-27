@@ -1,0 +1,24 @@
+{
+    "scores": [
+        {
+            "id": 1,
+            "user": "Pei",
+            "score": 5
+        },
+        {
+            "id": 2,
+            "user": "Hi",
+            "score": 2
+        },
+        {
+            "id": 3,
+            "user": "Test user",
+            "score": 7
+        },
+        {
+            "id": 4,
+            "user": "Pei",
+            "score": 9
+        }
+    ]
+}

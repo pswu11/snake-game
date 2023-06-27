@@ -1,4 +1,12 @@
 import { app, gameOver, isGameActive } from "./snake"
+import axios from 'axios'
+
+type Score = {
+  id: number;
+  user: string;
+  score: number;
+}
+
 // scores
 const initScore: number = 0
 const initHunger: number = 30
@@ -94,9 +102,33 @@ export function HungerLoop() {
   }
 }
 
-export function addHighScores() {
+// high scores
+
+// fetch scores from json server
+export async function fetchHighScores() {
+  const response = await axios.get("http://localhost:3000/scores")
+  return response.data
+}
+
+// TODO: sort scores
+
+
+
+// display scores on the board
+export async function addHighScores() {
   const highScores = document.createElement("div")
-  highScores.innerHTML = "HIGH SCORES!"
+  highScores.id = "highscore-board"
+  const scores = await fetchHighScores() as Score[]
+  scores.forEach(el => {
+    const userName = document.createElement("span")
+    const userScore = document.createElement("span")
+    userName.classList.add("name")
+    userScore.classList.add("score")
+    userName.textContent = el.user
+    userScore.textContent = el.score.toString()
+    highScores.appendChild(userName)
+    highScores.appendChild(userScore)
+  })
   app.appendChild(highScores)
 }
 

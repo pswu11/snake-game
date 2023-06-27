@@ -83,3 +83,12 @@ button {
   border-radius: 4px;
 }
 
+
+#highscore-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#highscore-board > .score {
+  text-align: end;
+}
