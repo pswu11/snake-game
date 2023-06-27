@@ -106,7 +106,7 @@ export function HungerLoop() {
 
 // add new score record
 export async function updateHighScores(newScore: Omit<Score, "id">) {
-  const response = await axios.post("https://json-server-live.vercel.app/highscores", {
+  const response = await axios.post("http://localhost:3000/highscores", {
     ...newScore
   })
   return response
@@ -115,7 +115,7 @@ export async function updateHighScores(newScore: Omit<Score, "id">) {
 
 // fetch scores from json server
 export async function fetchHighScores() {
-  const response = await axios.get("https://json-server-live.vercel.app/highscores")
+  const response = await axios.get("http://localhost:3000/highscores")
   return response.data
 }
 
