@@ -29,6 +29,11 @@
       "user": "Yolo",
       "score": 16,
       "id": 6
+    },
+    {
+      "user": "Hey",
+      "score": 0,
+      "id": 7
     }
   ]
 }
