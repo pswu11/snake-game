@@ -104,6 +104,15 @@ export function HungerLoop() {
 
 // high scores
 
+// add new score record
+export async function updateHighScores(newScore: Omit<Score, "id">) {
+  const response = await axios.post("http://localhost:3000/scores", {
+    ...newScore
+  })
+  return response
+}
+
+
 // fetch scores from json server
 export async function fetchHighScores() {
   const response = await axios.get("http://localhost:3000/scores")
@@ -111,14 +120,18 @@ export async function fetchHighScores() {
 }
 
 // TODO: sort scores
-
+function sortScores(scores: Score[]) {
+  const sortedScores = scores.sort((a, b) => a.score < b.score ? 1 : -1)
+  return sortedScores
+}
 
 
 // display scores on the board
 export async function addHighScores() {
   const highScores = document.createElement("div")
   highScores.id = "highscore-board"
-  const scores = await fetchHighScores() as Score[]
+  const scores = sortScores(await fetchHighScores() as Score[])
+  console.log(scores)
   scores.forEach(el => {
     const userName = document.createElement("span")
     const userScore = document.createElement("span")

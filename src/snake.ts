@@ -17,6 +17,7 @@ import {
   reduceHunger,
   HungerLoop,
   addHighScores,
+  updateHighScores,
 } from "./scores"
 
 // global
@@ -221,6 +222,10 @@ function createGameEndMsg() {
   Gameover! 
   Your Score: ${currentScore}
   `
+  // await updateHighScores({
+  //   user: playerName,
+  //   score: currentScore
+  // })
   restartBtn.textContent = "Restart"
   checkScoresBtn.textContent = "High Scores"
   endMsg.append(text)
