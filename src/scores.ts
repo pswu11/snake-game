@@ -96,7 +96,7 @@ export function HungerLoop() {
 
 export function addHighScores() {
   const highScores = document.createElement("div")
-  highScores.innerHTML = "HIGH SCORES!"
+  highScores.innerHTML = "This section is under construction."
   app.appendChild(highScores)
 }
 
