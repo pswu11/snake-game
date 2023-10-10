@@ -45,7 +45,13 @@ export function createInfoPanel() {
   const scoreEl = createScoreBoard()
   panel.appendChild(hungerEl)
   panel.appendChild(scoreEl)
+}
 
+export function createInstructionPanel() {
+  const instructions = document.createElement("div")
+  instructions.id = "gamestart-instructions"
+  instructions.textContent = "Press spacebar to start. Use arrow keys to move."
+  app.appendChild(instructions)
 }
 
 // increase score 

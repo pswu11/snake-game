@@ -60,6 +60,11 @@ input[type=text] {
   gap: 2rem;
 }
 
+#gamestart-instructions {
+  font-size: 0.8rem;
+  color: rgb(216, 198, 186);
+}
+
 #score-board, #hunger-meter {
   display: flex;
 }

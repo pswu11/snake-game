@@ -17,6 +17,7 @@ import {
   reduceHunger,
   HungerLoop,
   addHighScores,
+  createInstructionPanel,
 } from "./scores"
 
 // global
@@ -102,6 +103,7 @@ function createBoard() {
     newBoard.width = viewportMinSize * 0.7
     newBoard.height = viewportMinSize * 0.7
     createInfoPanel()
+    createInstructionPanel()
     app.appendChild(newBoard)
     return newBoard
   }
@@ -225,7 +227,7 @@ function createGameEndMsg() {
   checkScoresBtn.textContent = "High Scores"
   endMsg.append(text)
   endMsg.append(restartBtn)
-  endMsg.append(checkScoresBtn)
+  // endMsg.append(checkScoresBtn)
   app.append(endMsg)
   // click on button to restart
   restartBtn.addEventListener("click", () => {
